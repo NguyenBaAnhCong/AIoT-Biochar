@@ -18,7 +18,7 @@ services:
       - ./database/init:/docker-entrypoint-initdb.d:ro
       - ./database/seed:/seed:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -44,10 +44,19 @@ services:
       SEED_DEV_PASSWORDS: ${SEED_DEV_PASSWORDS:-true}
       APP_MIGRATIONS_ENABLED: ${APP_MIGRATIONS_ENABLED:-true}
       MIGRATIONS_DIR: /migrations
+      TV5_JOBS_ENABLED: ${TV5_JOBS_ENABLED:-false}
+      TV5_DATASET_ID: ${TV5_DATASET_ID:-}
+      TV5_USERNAME: ${TV5_USERNAME:-researcher01}
+      TV5_ALERT_MINUTES: ${TV5_ALERT_MINUTES:-15}
+      TV5_SQI_MINUTES: ${TV5_SQI_MINUTES:-1440}
+      TV5_TELEGRAM_TOKEN: ${TV5_TELEGRAM_TOKEN:-}
+      TV5_TELEGRAM_CHAT: ${TV5_TELEGRAM_CHAT:-}
     volumes:
       - ./database/migrations:/migrations:ro
+      - tv5_reports:/app/.tv5-reports
     ports:
       - "${APP_PORT:-8081}:8080"
 
 volumes:
   aiot_biochar_java_pgdata:
+  tv5_reports:

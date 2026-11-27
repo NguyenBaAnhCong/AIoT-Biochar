@@ -9,6 +9,7 @@ Project migration workspace. The original `aiot-main` project remains unchanged.
 - Database: PostgreSQL 16; the existing initialization SQL and migrations are retained.
 - TV1 backend: authentication, API keys, users, roles, permissions, organizations, audit,
   reference parameters, dashboard summary and system status.
+- TV5: soil health (SQI), alerts and decisions, and PDF/XLSX reporting. See the [TV5 integration guide](docs/TV5.md).
 - Demo seed and pending SQL migrations run automatically in the isolated Compose database.
 
 The database schema and TV1 API documents copied from the original project are kept under
@@ -55,6 +56,5 @@ Applied SQL files must not be edited; schema changes belong in a new migration.
 
 ## Current scope
 
-The TV1 backend APIs and the vanilla JavaScript login, dashboard and administration screens
-are implemented. Database-backed workflows still require a running PostgreSQL instance; the
-Compose stack could not be exercised when Docker Desktop was unavailable.
+The Java application includes TV1 and TV5. Their pages share the sign-in session and
+PostgreSQL connection.

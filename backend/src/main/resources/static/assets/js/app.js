@@ -1,3 +1,5 @@
+import { tv5Pages } from './tv5/core/navigation.js';
+
 const API_ROOT = '/api/v1';
 const TOKEN_KEY = 'aiot.accessToken';
 const REFRESH_KEY = 'aiot.refreshToken';
@@ -21,6 +23,7 @@ const dateText = (value) => value ? new Date(value).toLocaleString('vi-VN') : '�
 const numberText = (value, digits = 2) => value == null ? '—' : Number(value).toLocaleString('vi-VN', { maximumFractionDigits: digits });
 
 const pages = [
+  ...tv5Pages,
   { id: 'dashboard', title: 'Tổng quan', permission: 'reporting.read', group: 'Vận hành', icon: '◫' },
   { id: 'users', title: 'Người dùng', permission: 'iam.read', group: 'Quản trị', icon: '♙' },
   { id: 'roles', title: 'Vai trò & quyền', permission: 'iam.read', group: 'Quản trị', icon: '◇' },
@@ -131,6 +134,11 @@ function visiblePages() {
   return pages.filter((page) => !page.permission || state.user?.permissions?.includes(page.permission));
 }
 
+function startingPage(requested = 'dashboard') {
+  const localPages = visiblePages().filter(page => !page.href);
+  return (localPages.find(page => page.id === requested) || localPages[0])?.id;
+}
+
 function renderShell(content, title = '') {
   const allowed = visiblePages();
   const currentPage = allowed.find((page) => page.id === state.page) || allowed[0];
@@ -145,7 +153,7 @@ function renderShell(content, title = '') {
     <section class="nav-group">
       <div class="nav-group-title">${escapeHtml(group)}</div>
       ${allowed.filter((page) => page.group === group).map((page) => `
-        <a class="nav-item ${page.id === state.page ? 'active' : ''}" href="#${page.id}" data-page="${page.id}">
+        <a class="nav-item ${page.id === state.page ? 'active' : ''}" href="${page.href || `#${page.id}`}" ${page.href ? '' : `data-page="${page.id}"`}>
           <span aria-hidden="true">${page.icon}</span>${escapeHtml(page.title)}
         </a>`).join('')}
     </section>`).join('');
@@ -494,7 +502,7 @@ root.addEventListener('submit', async (event) => {
       const { data } = await api('/auth/login', { method: 'POST', body: input, public: true }, false);
       setSession(data);
       state.page = 'dashboard';
-      await navigate('dashboard');
+      await navigate(startingPage());
     } else if (form.id === 'user-filter') {
       state.userQuery = String(formValues(form).q || '').trim();
       await navigate('users');
@@ -559,7 +567,8 @@ async function start() {
   try {
     const { data } = await api('/auth/me');
     state.user = data;
-    await navigate(state.page);
+    const requested = location.hash.slice(1);
+    await navigate(startingPage(requested || state.page));
   } catch {
     clearSession();
     renderLogin();
