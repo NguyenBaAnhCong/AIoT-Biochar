@@ -1,0 +1,53 @@
+name: aiot-biochar-java
+
+services:
+  db:
+    image: postgres:16
+    container_name: aiot-biochar-java-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-biochar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-biochar_dev_pw}
+      POSTGRES_DB: ${POSTGRES_DB:-edge_aiot_biochar}
+      SEED_DEMO: ${SEED_DEMO:-true}
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - aiot_biochar_java_pgdata:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+      - ./database/seed:/seed:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: aiot-biochar-java-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-edge_aiot_biochar}
+      DB_USER: ${POSTGRES_USER:-biochar}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-biochar_dev_pw}
+      JWT_SECRET: ${JWT_SECRET:-replace-this-with-a-random-secret-at-least-32-characters}
+      JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-1800}
+      JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-604800}
+      DEV_DEFAULT_PASSWORD: ${DEV_DEFAULT_PASSWORD:-Biochar@2026}
+      SEED_DEV_PASSWORDS: ${SEED_DEV_PASSWORDS:-true}
+      APP_MIGRATIONS_ENABLED: ${APP_MIGRATIONS_ENABLED:-true}
+      MIGRATIONS_DIR: /migrations
+    volumes:
+      - ./database/migrations:/migrations:ro
+    ports:
+      - "${APP_PORT:-8081}:8080"
+
+volumes:
+  aiot_biochar_java_pgdata:
