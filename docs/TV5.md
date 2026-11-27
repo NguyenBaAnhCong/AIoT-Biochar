@@ -1,6 +1,6 @@
 # TV5 — Sức khỏe đất, cảnh báo và báo cáo
 
-TV5 chạy trong cùng ứng dụng Java với backend của nhóm. Sau khi đăng nhập, mở mục **TV5** trong menu để vào Sức khỏe đất, Cảnh báo & quyết định hoặc Báo cáo. Các trang dùng quyền `sqi.read`, `alert.read` và `reporting.read` tương ứng. Các thao tác ghi yêu cầu quyền `.write` của nghiệp vụ. Gán nhãn SQI yêu cầu thêm `dataset.write`.
+TV5 chạy trong cùng ứng dụng Java với backend của nhóm. Sau khi đăng nhập, mở **Dữ liệu & AI → Sức khỏe đất – SQI** (04) hoặc **Vận hành → Cảnh báo & quyết định** (12) và **Vận hành → Báo cáo** (13). Các trang dùng quyền `sqi.read`, `alert.read` và `reporting.read` tương ứng. Các thao tác ghi yêu cầu quyền `.write` của nghiệp vụ. Gán nhãn SQI yêu cầu thêm `dataset.write`.
 
 ## Cấu trúc theo mẫu UAV
 

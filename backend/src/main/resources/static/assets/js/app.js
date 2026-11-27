@@ -23,8 +23,8 @@ const dateText = (value) => value ? new Date(value).toLocaleString('vi-VN') : '�
 const numberText = (value, digits = 2) => value == null ? '—' : Number(value).toLocaleString('vi-VN', { maximumFractionDigits: digits });
 
 const pages = [
+  { id: 'dashboard', title: 'Tổng quan', permission: 'reporting.read', group: 'Tổng quan', icon: '◫' },
   ...tv5Pages,
-  { id: 'dashboard', title: 'Tổng quan', permission: 'reporting.read', group: 'Vận hành', icon: '◫' },
   { id: 'users', title: 'Người dùng', permission: 'iam.read', group: 'Quản trị', icon: '♙' },
   { id: 'roles', title: 'Vai trò & quyền', permission: 'iam.read', group: 'Quản trị', icon: '◇' },
   { id: 'api-keys', title: 'API keys', permission: 'iam.read', group: 'Quản trị', icon: '⌘' },

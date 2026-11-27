@@ -5,7 +5,7 @@ import { presentation } from '../theme/presentation.js';
 import { tv5Pages } from './navigation.js';
 
 const navigation = [
-  ['Vận hành', '/#dashboard', 'Tổng quan', 'reporting.read'],
+  ['Tổng quan', '/#dashboard', 'Tổng quan', 'reporting.read'],
   ...tv5Pages.map(page => [page.group, page.href, page.title, page.permission]),
   ['Quản trị', '/#users', 'Người dùng', 'iam.read'],
   ['Quản trị', '/#roles', 'Vai trò & quyền', 'iam.read'],
