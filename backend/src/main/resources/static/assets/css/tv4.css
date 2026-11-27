@@ -1,0 +1,9 @@
+.tv4-kpis { grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); }
+.tv4-actions { display:flex; flex-wrap:wrap; gap:6px; }
+.tv4-chart { height:150px; display:flex; align-items:end; gap:6px; padding:12px 4px 22px; border-bottom:1px solid var(--border); }
+.tv4-bar { position:relative; flex:1; min-width:8px; max-width:48px; background:var(--primary); border-radius:5px 5px 0 0; opacity:.82; }
+.tv4-bar span { position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:.7rem; color:var(--muted); }
+.tv4-link { border:0; background:none; color:var(--primary-dark); cursor:pointer; font:inherit; font-weight:650; padding:0; text-align:left; }
+.toolbar { display:flex; flex-wrap:wrap; align-items:end; gap:10px; margin-bottom:12px; }
+.toolbar select { min-width:160px; padding:8px 10px; border:1px solid var(--border); border-radius:8px; background:white; font:inherit; }
+@media(max-width:760px){.tv4-chart{gap:3px}.tv4-actions .btn{padding:4px 7px}}

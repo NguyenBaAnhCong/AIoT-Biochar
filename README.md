@@ -10,6 +10,7 @@ Project migration workspace. The original `aiot-main` project remains unchanged.
 - TV1 backend: authentication, API keys, users, roles, permissions, organizations, audit,
   reference parameters, dashboard summary and system status.
 - TV5: soil health (SQI), alerts and decisions, and PDF/XLSX reporting. See the [TV5 integration guide](docs/TV5.md).
+- TV4: data quality, issue/audit workflows, dataset versioning, labeling and CSV export. See the [TV4 integration guide](docs/TV4.md).
 - Demo seed and pending SQL migrations run automatically in the isolated Compose database.
 
 The database schema and TV1 API documents copied from the original project are kept under
@@ -56,5 +57,5 @@ Applied SQL files must not be edited; schema changes belong in a new migration.
 
 ## Current scope
 
-The Java application includes TV1 and TV5. Their pages share the sign-in session and
+The Java application includes TV1, TV4 and TV5. Their pages share the sign-in session and
 PostgreSQL connection.

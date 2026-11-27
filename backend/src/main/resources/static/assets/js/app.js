@@ -1,4 +1,5 @@
 import { tv5Pages } from './tv5/core/navigation.js';
+import { tv4Pages, renderTv4Page, handleTv4Action, handleTv4Submit } from './tv4/tv4.js';
 
 const API_ROOT = '/api/v1';
 const TOKEN_KEY = 'aiot.accessToken';
@@ -25,6 +26,7 @@ const numberText = (value, digits = 2) => value == null ? '—' : Number(value).
 const pages = [
   { id: 'dashboard', title: 'Tổng quan', permission: 'reporting.read', group: 'Tổng quan', icon: '◫' },
   ...tv5Pages,
+  ...tv4Pages,
   { id: 'users', title: 'Người dùng', permission: 'iam.read', group: 'Quản trị', icon: '♙' },
   { id: 'roles', title: 'Vai trò & quyền', permission: 'iam.read', group: 'Quản trị', icon: '◇' },
   { id: 'api-keys', title: 'API keys', permission: 'iam.read', group: 'Quản trị', icon: '⌘' },
@@ -216,6 +218,8 @@ async function navigate(pageId) {
 }
 
 async function renderPage(pageId) {
+  if (pageId === 'quality') return renderTv4Page('quality', { api, escapeHtml, dateText, numberText, user: state.user, state });
+  if (pageId === 'datasets') return renderTv4Page('datasets', { api, escapeHtml, dateText, numberText, user: state.user, state });
   if (pageId === 'dashboard') return renderDashboard();
   if (pageId === 'users') return renderUsers();
   if (pageId === 'roles') return renderRoles();
@@ -463,6 +467,7 @@ root.addEventListener('click', async (event) => {
   if (!button) return;
   const action = button.dataset.action;
   try {
+    if (await handleTv4Action(action, button, { api, navigate, notice, escapeHtml, state })) return;
     if (action === 'logout') {
       clearSession();
       state.generatedKey = null;
@@ -497,6 +502,7 @@ root.addEventListener('submit', async (event) => {
   event.preventDefault();
   const form = event.target;
   try {
+    if (await handleTv4Submit(form, { api, navigate, notice, formValues, state })) return;
     if (form.id === 'login-form') {
       const input = formValues(form);
       const { data } = await api('/auth/login', { method: 'POST', body: input, public: true }, false);
@@ -567,7 +573,7 @@ async function start() {
   try {
     const { data } = await api('/auth/me');
     state.user = data;
-    const requested = location.hash.slice(1);
+    const requested = location.hash.slice(1) || (location.pathname === '/tv4/quality' ? 'quality' : location.pathname === '/tv4/datasets' ? 'datasets' : '');
     await navigate(startingPage(requested || state.page));
   } catch {
     clearSession();

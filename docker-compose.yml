@@ -51,6 +51,10 @@ services:
       TV5_SQI_MINUTES: ${TV5_SQI_MINUTES:-1440}
       TV5_TELEGRAM_TOKEN: ${TV5_TELEGRAM_TOKEN:-}
       TV5_TELEGRAM_CHAT: ${TV5_TELEGRAM_CHAT:-}
+      TV4_QC_ENABLED: ${TV4_QC_ENABLED:-false}
+      TV4_QC_INTERVAL_MS: ${TV4_QC_INTERVAL_MS:-900000}
+      TV4_QC_LOOKBACK_MINUTES: ${TV4_QC_LOOKBACK_MINUTES:-30}
+      TV4_USERNAME: ${TV4_USERNAME:-researcher01}
     volumes:
       - ./database/migrations:/migrations:ro
       - tv5_reports:/app/.tv5-reports
