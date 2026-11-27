@@ -15,6 +15,27 @@ The database schema and TV1 API documents copied from the original project are k
 `database/` and `docs/reference/`. No React or Node.js backend code is used by this Java
 application.
 
+- TV3 backend and screens 05–07: farm, experiments and treatments, litchi biochar batches and
+  safety indicators, laboratory samples and results with the DRAFT → VERIFIED → APPROVED review
+  flow, Excel import, and the sensor-versus-lab comparison. API reference:
+  `docs/reference/API_TV3.md`.
+
+## Tests
+
+```powershell
+mvn -f backend/pom.xml test
+```
+
+The TV3 integration tests are skipped unless `TV3_DB_TEST=true`. They need a PostgreSQL
+database loaded with `database/init` and the demo seed (for example `docker compose up -d db`)
+and roll back their own changes:
+
+```powershell
+$env:TV3_DB_TEST = "true"
+$env:SPRING_DATASOURCE_URL = "jdbc:postgresql://localhost:5433/edge_aiot_biochar"
+mvn -f backend/pom.xml test
+```
+
 ## Run locally
 
 1. Copy `.env.example` to `.env`, replace `JWT_SECRET` with a random value of at least
@@ -55,6 +76,6 @@ Applied SQL files must not be edited; schema changes belong in a new migration.
 
 ## Current scope
 
-The TV1 backend APIs and the vanilla JavaScript login, dashboard and administration screens
-are implemented. Database-backed workflows still require a running PostgreSQL instance; the
+The TV1 backend APIs with the vanilla JavaScript login, dashboard and administration screens,
+and the TV3 APIs with screens 05–07, are implemented. Database-backed workflows still require a running PostgreSQL instance; the
 Compose stack could not be exercised when Docker Desktop was unavailable.

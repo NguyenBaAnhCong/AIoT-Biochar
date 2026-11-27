@@ -9,6 +9,7 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,6 +47,11 @@ public class GlobalExceptionHandler {
                 .map(error -> new ErrorDetail(error.getField(), error.getDefaultMessage()))
                 .toList();
         return response(400, "VALIDATION_ERROR", "Dữ liệu không hợp lệ", details);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiErrorResponse> handleUploadTooLarge(MaxUploadSizeExceededException exception) {
+        return response(413, "FILE_TOO_LARGE", "File tải lên vượt quá 5 MB", List.of());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

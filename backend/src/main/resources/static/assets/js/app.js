@@ -1,3 +1,5 @@
+import { createTv3, tv3Pages } from './tv3.js';
+
 const API_ROOT = '/api/v1';
 const TOKEN_KEY = 'aiot.accessToken';
 const REFRESH_KEY = 'aiot.refreshToken';
@@ -22,6 +24,7 @@ const numberText = (value, digits = 2) => value == null ? '—' : Number(value).
 
 const pages = [
   { id: 'dashboard', title: 'Tổng quan', permission: 'reporting.read', group: 'Vận hành', icon: '◫' },
+  ...tv3Pages,
   { id: 'users', title: 'Người dùng', permission: 'iam.read', group: 'Quản trị', icon: '♙' },
   { id: 'roles', title: 'Vai trò & quyền', permission: 'iam.read', group: 'Quản trị', icon: '◇' },
   { id: 'api-keys', title: 'API keys', permission: 'iam.read', group: 'Quản trị', icon: '⌘' },
@@ -50,14 +53,16 @@ function setSession(data) {
 async function api(path, options = {}, mayRefresh = true) {
   const headers = new Headers(options.headers || {});
   headers.set('Accept', 'application/json');
-  if (options.body !== undefined) headers.set('Content-Type', 'application/json');
+  const isUpload = options.body instanceof FormData;
+  if (options.body !== undefined && !isUpload) headers.set('Content-Type', 'application/json');
   if (state.accessToken && !options.public) headers.set('Authorization', `Bearer ${state.accessToken}`);
 
   const response = await fetch(`${API_ROOT}${path}`, {
     method: options.method || 'GET',
     headers,
-    body: options.body === undefined ? undefined : JSON.stringify(options.body),
+    body: options.body === undefined || isUpload ? options.body : JSON.stringify(options.body),
   });
+  if (options.raw && response.ok) return { data: await response.blob(), status: response.status };
   const text = await response.text();
   const result = text ? JSON.parse(text) : null;
 
@@ -190,7 +195,8 @@ function loadingPage() {
 }
 
 async function navigate(pageId) {
-  const page = visiblePages().find((item) => item.id === pageId);
+  const allowed = visiblePages();
+  const page = allowed.find((item) => item.id === pageId) || allowed[0];
   if (!page) return;
   state.page = page.id;
   const renderId = ++state.renderId;
@@ -207,7 +213,10 @@ async function navigate(pageId) {
   }
 }
 
+const tv3 = createTv3({ api, appState: state, navigate, notice, escapeHtml, dateText, numberText });
+
 async function renderPage(pageId) {
+  if (tv3Pages.some((page) => page.id === pageId)) return tv3.render(pageId);
   if (pageId === 'dashboard') return renderDashboard();
   if (pageId === 'users') return renderUsers();
   if (pageId === 'roles') return renderRoles();
@@ -454,10 +463,15 @@ root.addEventListener('click', async (event) => {
   const button = event.target.closest('[data-action]');
   if (!button) return;
   const action = button.dataset.action;
+  if (action.startsWith('tv3-')) {
+    await tv3.click(button);
+    return;
+  }
   try {
     if (action === 'logout') {
       clearSession();
       state.generatedKey = null;
+      tv3.reset();
       renderLogin();
     } else if (action === 'toggle-user') {
       const active = button.dataset.active === 'true';
@@ -488,6 +502,10 @@ window.addEventListener('popstate', () => {
 root.addEventListener('submit', async (event) => {
   event.preventDefault();
   const form = event.target;
+  if (form.dataset.tv3) {
+    await tv3.submit(form, event.submitter);
+    return;
+  }
   try {
     if (form.id === 'login-form') {
       const input = formValues(form);
